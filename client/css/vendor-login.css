@@ -1,0 +1,87 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f5fff5;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+  color: #006400;
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #1e6b38;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.or-divider {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.otp-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #723fe9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #175be3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.signup-text {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;
+}
+
+.signup-text a {
+  color: #175c2e;
+  text-decoration: none;
+  font-weight: bold;
+}

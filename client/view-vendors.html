@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vendor Accounts – MalkHub Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7fdf7;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #004d26;
+      margin: 0;
+    }
+    .logout-btn {
+      padding: 8px 16px;
+      background: #d33;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border: 1px solid #ccc;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background: #e6ffe6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>👤 All Registered Vendors</h2>
+  <button class="logout-btn" onclick="logoutAdmin()">🚪 Logout</button>
+</header>
+
+<table>
+  <thead>
+    <tr>
+      <th>Full Name</th>
+      <th>Mobile</th>
+      <th>Shop</th>
+      <th>Category</th>
+      <th>Village</th>
+    </tr>
+  </thead>
+  <tbody id="vendorTable"></tbody>
+</table>
+
+<script>
+  // Access Control
+  if (localStorage.getItem("isAdmin") !== "true") {
+    alert("Access Denied");
+    window.location.href = "admin-login.html";
+  }
+
+  // Load Vendors
+  const vendors = JSON.parse(localStorage.getItem("malkVendors")) || [];
+  const tbody = document.getElementById("vendorTable");
+
+  vendors.forEach(v => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${v.fullName}</td>
+      <td>${v.mobile}</td>
+      <td>${v.shopName}</td>
+      <td>${v.category}</td>
+      <td>${v.location}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Logout Admin
+  function logoutAdmin() {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+</body>
+</html>

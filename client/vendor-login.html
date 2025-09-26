@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Login - MalkHub</title>
+  <link rel="stylesheet" href="css/vendor-login.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Vendor Login</h2>
+    <form id="vendorLoginForm" action="vendor-dashboard.html" method="POST">
+      <input type="text" name="email" placeholder="Mobile or Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="login-btn" type="submit">Login</button>
+    </form>
+
+    <div class="or-divider">OR</div>
+
+    <button class="otp-btn" onclick="loginWithOTP()">Login with OTP</button>
+    <button class="google-btn">Login with Google</button>
+
+    <p class="signup-text">Don’t have an account? <a href="vendor-signup.html">Sign up</a></p>
+  </div>
+
+  <script src="js/vendor-login.js"></script>
+</body>
+</html>

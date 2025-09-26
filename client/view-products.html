@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Products – MalkHub Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8fff8;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #006400;
+      margin: 0;
+    }
+    .logout-btn {
+      padding: 8px 16px;
+      background: #d33;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .product-list {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    .product-card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .product-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .product-card h4 {
+      margin: 10px 0 5px;
+    }
+    .product-card p {
+      font-size: 14px;
+      color: #444;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>📦 All Uploaded Products</h2>
+  <button class="logout-btn" onclick="logoutAdmin()">🚪 Logout</button>
+</header>
+
+<div class="product-list" id="productList"></div>
+
+<script>
+  if (localStorage.getItem("isAdmin") !== "true") {
+    alert("Access Denied");
+    window.location.href = "admin-login.html";
+  }
+
+  const BASE = "http://localhost:5000";
+
+  fetch(`${BASE}/api/products/all`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("productList");
+      data.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.innerHTML = `
+          <img src="${BASE}/uploads/${p.image}" alt="${p.name}" />
+          <h4>${p.name}</h4>
+          <p><strong>Category:</strong> ${p.category}</p>
+          <p><strong>Price:</strong> ₹${p.price}</p>
+          <p><strong>Shop:</strong> ${p.shopName}</p>
+          <p><strong>Vendor:</strong> ${p.vendorName}</p>
+        `;
+        list.appendChild(div);
+      });
+    })
+    .catch(err => {
+      document.getElementById("productList").innerHTML = `<p>⚠️ Failed to load products.</p>`;
+      console.error(err);
+    });
+
+  function logoutAdmin() {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+</body>
+</html>

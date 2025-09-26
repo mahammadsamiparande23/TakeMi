@@ -1,0 +1,21 @@
+user_role.txt
+
+
+1. Admin(me):
+	- Manage all users.
+	- Approve or reject vendor (Shopkeeper).
+	- view all users.
+	- Manage platform settings.
+
+2. Vendor (Shopkeepers or Sellers):
+	
+	- Add and edit products.
+	- Manage inventory.
+	- View and fulfill their orders.
+	- View Earning
+
+3. Buyer (customer):
+	- Browse products.
+	- Place orders.
+	- track Orders.
+	- Leave reviews

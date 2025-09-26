@@ -1,0 +1,148 @@
+/* Global Reset & Font */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f8fff8;
+}
+
+/* Header Styling */
+header {
+  background: #fff;
+  padding: 10px 20px;
+  border-bottom: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.logo {
+  height: 50px;
+}
+
+/* Navigation Styling */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+nav a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #006400;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #004d00;
+}
+
+/* Main Order Section */
+.order-section {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.order-section h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 26px;
+  color: #222;
+}
+
+/* Order Cards Grid */
+.order-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Individual Order Card */
+.order-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Product Image */
+.order-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* Order Info Text */
+.order-info {
+  width: 100%;
+  text-align: left;
+}
+
+.order-info h3 {
+  margin: 5px 0;
+  font-size: 18px;
+  color: #222;
+}
+
+.order-info p {
+  margin: 3px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #d32f2f;
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #b71c1c;
+}
+
+/* Order Status */
+.status {
+  color: #e67e22;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .order-card {
+    width: 100%;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav ul {
+    justify-content: flex-start;
+  }
+}

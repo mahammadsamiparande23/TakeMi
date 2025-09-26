@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard – MalkHub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9fdf9;
+    }
+
+    .dashboard-header {
+      background: #228B22;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      height: 40px;
+    }
+
+    .logout-btn {
+      background: #e74c3c;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .dashboard-main {
+      padding: 30px 20px;
+    }
+
+    .welcome-msg {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #228B22;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 18px;
+      text-decoration: none;
+      color: #228B22;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .card span {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .card:hover {
+      background: #effff0;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="dashboard-header">
+    <img src="images/RealHub.jpg" class="logo" alt="MalkHub Logo" />
+    <h2>User Dashboard</h2>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="welcome-msg" id="welcomeUser"></div>
+
+    <section class="dashboard-grid">
+      <a href="orders.html" class="card">
+        <span>🛒</span>
+        View Orders
+      </a>
+      <a href="booked.html" class="card">
+        <span>📅</span>
+        View Booked Services
+      </a>
+      <a href="bookmarks.html" class="card">
+        <span>🔖</span>
+        Bookmarked
+      </a>
+      <a href="edit-profile.html" class="card">
+        <span>✏️</span>
+        Edit Profile
+      </a>
+    </section>
+  </main>
+
+  <script>
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) {
+    alert("You must be logged in first.");
+    window.location.href = "user-login.html";
+  } else {
+    document.getElementById("welcomeUser").textContent =
+      `Hello, ${user.name} 👋`;
+  }
+
+  function logout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("userType");
+    window.location.href = "user-login.html";
+  }
+</script>
+
+
+</body>
+</html>

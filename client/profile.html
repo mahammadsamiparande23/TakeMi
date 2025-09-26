@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MalkHub Profile</title>
+  <link rel="stylesheet" href="css/profile.css" />
+</head>
+<body>
+  <header>
+    <img src="RealHub.jpg" class="logo" alt="MalkHub Logo" />
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="malkbazar.html">🛒 MalkBazar</a></li>
+        <li><a href="malkservices.html">🛠️ MalkServices</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="profile-container">
+    <h2>👤 Profile</h2>
+    <div class="profile-box" id="profileInfo">Loading...</div>
+
+    <div class="profile-actions">
+      <button onclick="goToDashboard()">📊 Go to Dashboard</button>
+      <a href="edit-profile.html"><button>✏️ Edit Profile</button></a>
+      <button onclick="logout()">🚪 Logout</button>
+    </div>
+  </main>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const vendors = JSON.parse(localStorage.getItem("malkVendors")) || [];
+    const profileBox = document.getElementById("profileInfo");
+
+    if (!user) {
+      profileBox.innerHTML = "<p>Please log in to view profile.</p>";
+    } else {
+      const isVendor = vendors.find(v => v.mobile === user.mobile);
+      if (isVendor) {
+        profileBox.innerHTML = `
+          <p><strong>Role:</strong> Vendor</p>
+          <p><strong>Name:</strong> ${isVendor.fullName}</p>
+          <p><strong>Mobile:</strong> ${isVendor.mobile}</p>
+          <p><strong>Shop/Service:</strong> ${isVendor.shopName}</p>
+          <p><strong>Category:</strong> ${isVendor.category}</p>
+          <p><strong>Location:</strong> ${isVendor.location}</p>
+        `;
+      } else {
+        profileBox.innerHTML = `
+          <p><strong>Role:</strong> User</p>
+          <p><strong>Name:</strong> ${user.name || "Not Set"}</p>
+          <p><strong>Mobile/Email:</strong> ${user.mobile || user.email}</p>
+        `;
+      }
+    }
+
+    function goToDashboard() {
+      const vendor = vendors.find(v => v.mobile === user?.mobile);
+      if (vendor?.category === "malkbazar") {
+        window.location.href = "malkbazar-vendor-panel.html";
+      } else if (vendor?.category === "malkservices") {
+        window.location.href = "malkservices-vendor-panel.html";
+      } else {
+        window.location.href = "user-dashboard.html"; // create this
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

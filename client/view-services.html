@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Services – MalkHub Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7fdf7;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #006400;
+    }
+
+    .service-list {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .service-card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .service-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .service-card h4 {
+      margin: 10px 0 6px;
+    }
+
+    .service-card p {
+      font-size: 14px;
+      color: #444;
+      margin: 4px 0;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 8px 14px;
+      background: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🛠️ All Uploaded Services</h2>
+<button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+
+<div class="service-list" id="serviceList"></div>
+
+<script>
+  // ✅ Protect Admin Access
+  if (localStorage.getItem("isAdmin") !== "true") {
+    alert("Access Denied");
+    window.location.href = "admin-login.html";
+  }
+
+  const BASE = "http://localhost:5000";
+
+  // ✅ Fetch services from backend
+  fetch(`${BASE}/api/services/all`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("serviceList");
+
+      data.forEach(service => {
+        const card = document.createElement("div");
+        card.className = "service-card";
+        card.innerHTML = `
+          <img src="${BASE}/uploads/${service.image}" alt="${service.name}" />
+          <h4>${service.name}</h4>
+          <p><strong>Category:</strong> ${service.category}</p>
+          <p><strong>Price:</strong> ₹${service.price}</p>
+          <p><strong>Experience:</strong> ${service.experience} yrs</p>
+          <p><strong>Provider:</strong> ${service.provider}</p>
+          <p><strong>Village:</strong> ${service.village}</p>
+        `;
+        list.appendChild(card);
+      });
+    });
+
+  // ✅ Logout
+  function logoutAdmin() {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+</body>
+</html>

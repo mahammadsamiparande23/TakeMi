@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MalkBazar Vendor Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial;
+      background: #f4fff4;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #006400;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .images-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .images-preview img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      padding: 12px;
+      width: 100%;
+      background: #006400;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>🛒 MalkBazar Vendor Panel</h2>
+    <form id="productForm">
+      <input type="text" placeholder="Product Name" required />
+      <input type="number" placeholder="Price ₹" required />
+
+      <select required>
+        <option value="">Select Category</option>
+        <option value="grocery">Grocery</option>
+        <option value="fashion">Fashion</option>
+        <option value="electronics">Electronics</option>
+      </select>
+
+      <textarea placeholder="Product Description" rows="4" required></textarea>
+
+      <label><strong>Upload Multiple Product Images:</strong></label>
+      <input type="file" accept="image/*" id="productImages" multiple />
+      <div class="images-preview" id="previewBox"></div>
+
+      <button type="submit">Add Product</button>
+    </form>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('productImages');
+    const previewBox = document.getElementById('previewBox');
+
+    imageInput.addEventListener('change', () => {
+      previewBox.innerHTML = '';
+      Array.from(imageInput.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          previewBox.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    document.getElementById("productForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("✅ Product added successfully! (Connect backend to save it)");
+      this.reset();
+      previewBox.innerHTML = '';
+    });
+  </script>
+
+</body>
+</html>

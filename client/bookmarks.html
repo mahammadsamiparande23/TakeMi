@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookmarked Services – MalkHub</title>
+  <link rel="stylesheet" href="css/malkservices.css" />
+</head>
+<body>
+  <header>
+    <img src="RealHub.jpg" alt="MalkHub Logo" class="logo" />
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="malkbazar.html">MalkBazar</a></li>
+        <li><a href="malkservices.html">MalkServices</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="order-section">
+    <h2>🔖 Your Bookmarked Services</h2>
+    <label for="filterCategory">Filter by Category:</label>
+<select id="filterCategory">
+  <option value="">All</option>
+  <option value="travel">Travel & Transport</option>
+  <option value="repair">Repair & Utility</option>
+  <option value="construction">Construction</option>
+  <option value="education">Education</option>
+  <option value="vehicle">Vehicle Services</option>
+  <option value="events">Event Services</option>
+  <option value="personal">Personal Care</option>
+</select>
+
+    <div id="bookmarkList" class="order-list"></div>
+  </main>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const bookmarkList = document.getElementById("bookmarkList");
+  const filterSelect = document.getElementById("filterCategory");
+
+  const bookmarks = JSON.parse(localStorage.getItem("malkBookmarks")) || [];
+
+  // If no bookmarks
+  if (!bookmarks.length) {
+    bookmarkList.innerHTML = "<p>You haven’t bookmarked any service yet.</p>";
+    return;
+  }
+
+  // Sort by date (descending) — newest first
+  bookmarks.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+  // Render function
+  function renderBookmarks() {
+    const selectedCategory = filterSelect.value;
+    bookmarkList.innerHTML = "";
+
+    const filtered = selectedCategory
+      ? bookmarks.filter(service => service.category === selectedCategory)
+      : bookmarks;
+
+    if (filtered.length === 0) {
+      bookmarkList.innerHTML = "<p>No bookmarks found in this category.</p>";
+      return;
+    }
+
+    filtered.forEach((service, index) => {
+      const div = document.createElement("div");
+      div.className = "order-card";
+      div.innerHTML = `
+        <img src="${service.image}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 5px;" />
+        <h3>${service.name}</h3>
+        <p>Price: ${service.price}</p>
+        <p>Experience: ${service.experience}</p>
+        <p>Provider: ${service.provider}</p>
+        <p><strong>Bookmarked On:</strong> ${service.date || "Not set"}</p>
+        <button class="remove-btn" data-index="${index}">❌ Remove</button>
+      `;
+      bookmarkList.appendChild(div);
+    });
+
+    // Handle remove buttons
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const index = btn.getAttribute("data-index");
+        if (confirm("Remove this bookmark?")) {
+          bookmarks.splice(index, 1);
+          localStorage.setItem("malkBookmarks", JSON.stringify(bookmarks));
+          renderBookmarks();
+        }
+      });
+    });
+  }
+
+  // Dropdown filter event
+  filterSelect.addEventListener("change", renderBookmarks);
+
+  renderBookmarks();
+});
+
+</script>
+
+</body>
+</html>

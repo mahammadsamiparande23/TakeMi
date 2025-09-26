@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – MalkHub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9fef9;
+      color: #333;
+    }
+
+    header {
+      background-color: #006400;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    header button {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 30px 20px;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #006400;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+    .logout-btn {
+  background-color: #c0392b;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  float: right;
+}
+
+  </style>
+</head>
+<body>
+
+  <header class="admin-header">
+  <h1>MalkHub Admin Dashboard</h1>
+  <button onclick="logoutAdmin()" class="logout-btn">🚪 Logout</button>
+</header>
+
+  <main>
+    <section class="card-container">
+      <div class="card" onclick="location.href='view-products.html'">
+        <h3>📦 View All Products</h3>
+        <p>Uploaded by MalkBazar vendors</p>
+      </div>
+      <div class="card" onclick="location.href='view-services.html'">
+        <h3>🧰 View All Services</h3>
+        <p>Submitted by MalkServices vendors</p>
+      </div>
+      <div class="card" onclick="location.href='vendors.html'">
+        <h3>👤 Vendor Accounts</h3>
+        <p>Registered MalkHub vendors</p>
+      </div>
+      <div class="card" onclick="location.href='orders.html'">
+        <h3>📑 Orders & Bookings</h3>
+        <p>Placed by customers</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  // ✅ Access restriction for admin-only pages
+  if (localStorage.getItem("isAdmin") !== "true") {
+    alert("Access Denied! Only admin allowed.");
+    window.location.href = "admin-login.html";
+  }
+
+  // ✅ Proper admin logout
+  function logoutAdmin() {
+    alert("Admin logged out.");
+    localStorage.removeItem("isAdmin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+
+</body>
+</html>

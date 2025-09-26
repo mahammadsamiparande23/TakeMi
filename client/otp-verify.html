@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify OTP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Verify OTP</h2>
+    <input type="email" id="otp-email" placeholder="Enter your email" required />
+    <input type="text" id="otp-code" placeholder="Enter OTP" required />
+    <select id="role">
+      <option value="user">User</option>
+      <option value="vendor">Vendor</option>
+    </select>
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <script>
+    async function verifyOTP() {
+      const email = document.getElementById("otp-email").value;
+      const otp = document.getElementById("otp-code").value;
+      const role = document.getElementById("role").value;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/user/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp, role }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "OTP verification failed");
+        alert("✅ Login successful with OTP!");
+        // Store token or redirect user
+        localStorage.setItem("token", data.token); // if token is returned
+        window.location.href = "/dashboard.html"; // example
+      } catch (err) {
+        alert(`❌ Error: ${err.message}`);
+      }
+    }
+  </script>
+</body>
+</html>

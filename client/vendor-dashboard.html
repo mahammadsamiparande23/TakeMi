@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Dashboard – MalkHub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8fff8;
+    }
+
+    .dashboard-header {
+      background: #006400;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      height: 40px;
+    }
+
+    .logout-btn {
+      background: #e74c3c;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .dashboard-main {
+      padding: 30px 20px;
+    }
+
+    .welcome-msg {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #006400;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 18px;
+      text-decoration: none;
+      color: #006400;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .card span {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .card:hover {
+      background: #eaffea;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="dashboard-header">
+    <img src="images/RealHub.jpg" class="logo" alt="MalkHub Logo" />
+    <h2>Vendor Dashboard</h2>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="welcome-msg" id="welcomeVendor"></div>
+
+    <section class="dashboard-grid" id="dashboardCards">
+      <!-- Cards will be injected via JS -->
+    </section>
+  </main>
+
+  <script>
+    const vendor = JSON.parse(localStorage.getItem("vendor"));
+    const vendorType = vendor?.category || "malkbazar";
+
+    document.getElementById("welcomeVendor").textContent =
+      `Hello, ${vendor?.fullName || "Vendor"} 👋`;
+
+    const dashboardCards = document.getElementById("dashboardCards");
+
+    const commonCards = `
+      <a href="edit-profile.html" class="card">
+        <span>✏️</span>
+        Edit Profile
+      </a>
+    `;
+
+    const malkbazarCards = `
+      <a href="malkbazar-vendor-panel.html" class="card">
+        <span>🛍️</span>
+        Manage Products
+      </a>
+      <a href="orders.html" class="card">
+        <span>📦</span>
+        View Orders
+      </a>
+    `;
+
+    const malkservicesCards = `
+      <a href="malkservices-vendor-panel.html" class="card">
+        <span>🔧</span>
+        Manage Services
+      </a>
+      <a href="booked.html" class="card">
+        <span>📅</span>
+        View Bookings
+      </a>
+    `;
+
+    dashboardCards.innerHTML =
+      commonCards + (vendorType === "malkservices" ? malkservicesCards : malkbazarCards);
+
+    function logout() {
+      localStorage.removeItem("vendor");
+      localStorage.removeItem("userType");
+      window.location.href = "vendor-login.html";
+    }
+  </script>
+
+</body>
+</html>

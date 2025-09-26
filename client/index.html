@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MalkHub – मलकापूरचा डिजिटल बाजार आणि सेवा केंद्र</title>
+
+  <meta name="description" content="MalkHub is your village's one-stop hub for online shopping and local services. Buy groceries, clothes, gadgets or book local services like barbers, tractors, and tutors in Malkapur." />
+  <meta name="keywords" content="MalkHub, Malkapur, village shopping, local services, rural eCommerce, मलकापुर बाजार, ग्रामीण सेवा" />
+  <meta name="author" content="MalkHub Team" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="MalkHub – मलकापूरचा डिजिटल बाजार" />
+  <meta property="og:description" content="Buy & book local essentials and services across Malkapur – groceries, fashion, tractor booking, barbers, and more." />
+  <meta property="og:image" content="https://yourdomain.com/images/logo.png" />
+  <meta property="og:type" content="website" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+
+<header>
+  <img src="RealHub.jpg" alt="MalkHub Logo" class="logo" />
+  <section class="search-section">
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search for products or services...">
+    <button id="voiceBtn">🎤</button>
+    <button id="cameraBtn">📷</button>
+    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
+  </div>
+</section>
+  <nav>
+    
+    
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="malkbazar.html">MalkBazar</a></li>
+      <li><a href="malkservices.html">MalkServices</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#login">Login</a></li>
+    </ul>
+    <select id="languageSelector">
+      <option value="en">English</option>
+      <option value="mr">मराठी</option>
+      <option value="hi">हिंदी</option>
+    </select>
+
+    <div id="profile-menu" class="profile-menu hidden">
+      <img src="images/user-icon.png" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()" />
+      <div id="profile-dropdown" class="profile-dropdown hidden">
+        <a href="profile.html">👤 My Profile</a>
+        <a href="orders.html">📦 My Orders</a>
+        <button onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+  </nav>
+</header> 
+
+
+
+<section class="hero" id="home">
+  <h1>Welcome to MalkHub</h1>
+  <p>मलकापूरच्या सेवांचा ऑनलाइन हब</p>
+  <section class="tile-section">
+  <div class="tile-box">
+    <a href="malkbazar.html" class="tile-title">Malk Bazar</a>
+    <hr />
+    <a href="orders.html" class="tile-sub">Orders</a>
+  </div>
+
+  <div class="tile-box">
+    <a href="malkservices.html" class="tile-title">Malk Services</a>
+    <hr />
+    <a href="booked.html" class="tile-sub">Booked</a>
+  </div>
+</section>
+
+<section class="advertise-section">
+  <h2>🔥 Featured Promotions</h2>
+  <div class="advertise-container">
+    <div class="ad-card">
+      <img src="images/milk-discount.jpg" alt="Fresh Milk Offer">
+      <p><strong>Fresh Milk 10% Off!</strong><br>From Malkapur Dairy Center</p>
+    </div>
+    <div class="ad-card">
+      <img src="images/tailor-offer.jpg" alt="Tailor Ad">
+      <p><strong>Free Alteration</strong><br>With every new stitched kurta</p>
+    </div>
+    <!-- Add more ads as needed -->
+  </div>
+</section>
+
+
+</section>
+
+
+
+<!-- Add inside <body> after .tile-section and before MalkBazar section -->
+<section class="latest-section">
+  <h2>Latest Products</h2>
+  <div class="scroll-container">
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Bluetooth Speaker">Bluetooth Speaker</a></div>
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Earrings">Earrings</a> </div>
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Fresh Milk">Fresh Milk</a></div>
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Organic Tomato">Organic Tomato</a></div>
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Turmeric Powder">Turmeric Powder</a></div>
+    <div class="latest-card">
+      <a href="malkbazar.html?search=Kids School Bag">Kids School Bag</a></div>
+  </div>
+</section>
+
+<section class="latest-section">
+  <h2>Latest Services</h2>
+  <div class="scroll-container">
+    <div class="latest-card">
+      <a href="malkservices.html?search=Rikshaw Booking">Rikshaw Booking</a></div>
+    <div class="latest-card">
+      <a href="malkservices.html?search=Electrician">Electrician</a></div>
+    <div class="latest-card">
+      <a href="malkservices.html?search=Mobile Mechanic">Mobile Mechanic</a></div>
+    <div class="latest-card">
+      <a href="malkservices.html?search=DJ Service">DJ Service</a></div>
+    <div class="latest-card">
+      <a href="malkservices.html?search=Parlour Booking">Parlour Booking</a></div>
+    <div class="latest-card">
+      <a href="malkservices.html?search=Drawing Tutor">Drawing Tutor</a></div>
+  </div>
+</section>
+
+
+<section id="about" style="padding: 50px 20px; background-color: #f0fff0;">
+  <h2 style="text-align: center; color: #006400; margin-bottom: 20px;">🌿 About MalkHub</h2>
+  <div style="max-width: 800px; margin: auto; font-size: 1.1em; color: #333; line-height: 1.6;">
+    <p>
+      <strong>MalkHub</strong> is your village’s digital bazar and service hub. We bring local shops and essential services online — 
+      making it easy to buy vegetables, clothes, gadgets, or book a barber, mechanic, tractor, or tutor right from your phone.
+    </p>
+    <p>
+      Our mission is to empower Malkapur and nearby areas by connecting people and local vendors in the simplest, fastest, and most affordable way.
+    </p>
+  </div>
+</section>
+
+<section id="contact" style="padding: 50px 20px; background-color: #ffffff;">
+  <h2 style="text-align: center; color: #006400; margin-bottom: 20px;">📞 Contact Us</h2>
+  <div style="max-width: 600px; margin: auto; display: flex; flex-direction: column; gap: 12px; font-size: 1.1em; color: #333;">
+    <p><i class="fas fa-envelope" style="color:#006400;"></i> &nbsp; <strong>Email:</strong> support@malkhub.in</p>
+    <p><i class="fas fa-phone" style="color:#006400;"></i> &nbsp; <strong>Phone:</strong> +91 98765 43210</p>
+    <p><i class="fas fa-map-marker-alt" style="color:#006400;"></i> &nbsp; <strong>Location:</strong> Malkapur, Shahuwadi, Maharashtra</p>
+  </div>
+</section>
+
+
+
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModalBtn">&times;</span>
+    <h2>Login or Signup</h2>
+    <div class="login-buttons">
+      <button class="login-option" onclick="location.href='user-login.html'">User Login</button>
+      <button class="login-option" onclick="location.href='vendor-login.html'">Vendor Login</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<footer>
+  <p>© 2025 MalkHub | All rights reserved.</p>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>
+

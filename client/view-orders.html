@@ -1,0 +1,102 @@
+<!-- view-orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Orders – MalkHub Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8fff8;
+      padding: 20px;
+    }
+    h2 {
+      color: #006400;
+    }
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .order-card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .order-card h4 {
+      margin: 0 0 8px;
+    }
+    .order-card p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #444;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 8px 14px;
+      background: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>📦 All Orders Placed by Users</h2>
+<button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+
+<div class="order-list" id="orderList"></div>
+
+<script>
+  // ✅ Only Admin Access
+  if (localStorage.getItem("isAdmin") !== "true") {
+    alert("Access Denied");
+    window.location.href = "admin-login.html";
+  }
+
+  const orderList = document.getElementById("orderList");
+
+  // ✅ Fetch orders from backend API
+  async function loadOrders() {
+    try {
+      const res = await fetch("http://localhost:5000/api/orders");
+      const orders = await res.json();
+
+      if (!orders.length) {
+        orderList.innerHTML = "<p>No orders placed yet.</p>";
+        return;
+      }
+
+      orders.forEach(order => {
+        const div = document.createElement("div");
+        div.className = "order-card";
+        div.innerHTML = `
+          <h4>🛒 ${order.name}</h4>
+          <p><strong>Price:</strong> ₹${order.price}</p>
+          <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+        `;
+        orderList.appendChild(div);
+      });
+    } catch (err) {
+      console.error("Failed to load orders:", err);
+      orderList.innerHTML = "<p>Failed to load orders from server.</p>";
+    }
+  }
+
+  loadOrders(); // Call function on page load
+
+  function logoutAdmin() {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+</body>
+</html>

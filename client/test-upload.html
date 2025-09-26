@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Product Upload</title>
+</head>
+<body>
+  <h2>📦 Upload Product</h2>
+  <form action="http://localhost:5000/api/products/add" method="POST" enctype="multipart/form-data">
+    <label>Name: <input type="text" name="name" required></label><br><br>
+    <label>Category: <input type="text" name="category" required></label><br><br>
+    <label>Price: <input type="number" name="price" required></label><br><br>
+    <label>Description: <textarea name="description"></textarea></label><br><br>
+    <label>Vendor Name: <input type="text" name="vendorName"></label><br><br>
+    <label>Shop Name: <input type="text" name="shopName"></label><br><br>
+    <label>Contact Number: <input type="text" name="contactNumber"></label><br><br>
+    <label>Village: <input type="text" name="village"></label><br><br>
+    <label>Image: <input type="file" name="image"></label><br><br>
+    <button type="submit">Upload</button>
+  </form>
+</body>
+<script>
+document.getElementById("productForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch("http://localhost:5000/api/products/add", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert("✅ Product uploaded successfully!");
+      this.reset();
+      document.getElementById("previewBox").innerHTML = "";
+    } else {
+      alert("❌ Upload failed.");
+    }
+  } catch (err) {
+    alert("❌ Error uploading product.");
+    console.error(err);
+  }
+});
+</script>
+
+</html>

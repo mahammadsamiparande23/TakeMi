@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add New Product - MalkHub Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+      padding: 40px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      background: #2980b9;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #21689c;
+    }
+
+    .success, .error {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🛒 Add New Product</h2>
+    <form id="addProductForm">
+      <label for="name">Product Name</label>
+      <input type="text" id="name" required />
+
+      <label for="category">Category</label>
+      <input type="text" id="category" placeholder="e.g., Grocery, Electronics" required />
+
+      <label for="price">Price (₹)</label>
+      <input type="number" id="price" required />
+
+      <label for="stock">Stock Quantity</label>
+      <input type="number" id="stock" required />
+
+      <label for="vendorId">Vendor ID</label>
+      <input type="text" id="vendorId" required />
+
+      <label for="image">Image URL</label>
+      <input type="text" id="image" placeholder="images/product.png" required />
+
+      <button type="submit">➕ Add Product</button>
+      <div class="success" id="successMsg"></div>
+      <div class="error" id="errorMsg"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("addProductForm");
+    const successMsg = document.getElementById("successMsg");
+    const errorMsg = document.getElementById("errorMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      successMsg.innerText = "";
+      errorMsg.innerText = "";
+
+      const product = {
+        name: document.getElementById("name").value.trim(),
+        category: document.getElementById("category").value.trim(),
+        price: document.getElementById("price").value.trim(),
+        stock: document.getElementById("stock").value.trim(),
+        vendorId: document.getElementById("vendorId").value.trim(),
+        image: document.getElementById("image").value.trim(),
+      };
+
+      if (!product.name || !product.category || !product.price || !product.stock || !product.vendorId || !product.image) {
+        errorMsg.innerText = "Please fill all fields correctly.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(product)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          successMsg.innerText = "✅ Product added successfully!";
+          form.reset();
+        } else {
+          errorMsg.innerText = data.error || "Failed to add product.";
+        }
+      } catch (err) {
+        errorMsg.innerText = "⚠️ Server error. Please try again.";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
