@@ -75,3 +75,6 @@ coverage/
 # Large installers
 *.msi
 *.zip
+
+# Large unfinished downloads
+*.crdownload
