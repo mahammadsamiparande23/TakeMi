@@ -1,84 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>MalkServices – मलकापूरच्या स्थानिक सेवा ऑनलाइन</title>
+    <meta charset="UTF-8" />
+    <title>MalkServices – मलकापूरच्या स्थानिक सेवा ऑनलाइन</title>
 
-  <meta name="description" content="Book trusted local services in Malkapur: electricians, barbers, tractor booking, water tank cleaning, tutors, and more via MalkServices." />
-  <meta name="keywords" content="MalkServices, MalkHub, local services, barber booking, tractor booking, Malkapur electricians, rural booking" />
-  <meta name="author" content="MalkHub Team" />
-  <meta name="robots" content="index, follow" />
-  <meta property="og:title" content="MalkServices – मलकापूरच्या सेवा" />
-  <meta property="og:description" content="Easy booking of daily-needed local services like rikshaw, plumber, tailor, DJ, and coaching – all from your mobile in Malkapur." />
-  <meta property="og:image" content="https://yourdomain.com/images/malkservices-preview.jpg" />
-  <meta property="og:type" content="website" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Book trusted local services in Malkapur: electricians, barbers, tractor booking, water tank cleaning, tutors, and more via MalkServices." />
+    <meta name="keywords" content="MalkServices, MalkHub, local services, barber booking, tractor booking, Malkapur electricians, rural booking" />
+    <meta name="author" content="MalkHub Team" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="MalkServices – मलकापूरच्या सेवा" />
+    <meta property="og:description" content="Easy booking of daily-needed local services like rikshaw, plumber, tailor, DJ, and coaching – all from your mobile in Malkapur." />
+    <meta property="og:image" content="https://yourdomain.com/images/malkservices-preview.jpg" />
+    <meta property="og:type" content="website" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="css/malkservices.css" />
+    <link rel="stylesheet" href="css/malkservices.css" />
 </head>
 <body>
 
 <header>
-  <img src="RealHub.jpg" class="logo" alt="MalkHub" />
-  <div>
-    <input type="text" id="searchInput" placeholder="🔍 Search services...">
-    <button id="voiceBtn">🎤</button>
-    <button id="cameraBtn">📷</button>
-    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
-  </div>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="malkbazar.html">MalkBazar</a></li>
-      <li><a href="malkservices.html">MalkServices</a></li>
-    </ul>
-  </nav>
+    <img src="RealHub.jpg" class="logo" alt="MalkHub" />
+    <div>
+        <input type="text" id="searchInput" placeholder="🔍 Search services...">
+        <button id="voiceBtn">🎤</button>
+        <button id="cameraBtn">📷</button>
+        <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="malkbazar.html">MalkBazar</a></li>
+            <li><a href="malkservices.html">MalkServices</a></li>
+        </ul>
+    </nav>
 </header>
 
-<div class="section-actions">
-  <a href="booked.html" class="floating-action" style="right: 20px;">
-    📋 Booked <span class="booked-count" style="background:red; color:white; padding:2px 6px; border-radius:12px; font-size:12px;">0</span>
-  </a>
-
-  <a href="bookmarks.html" class="floating-action" style="right: 100px; background-color: #ff9900;">
-    🔖 Bookmarks <span class="bookmark-count" style="background:red; color:white; padding:2px 6px; border-radius:12px; font-size:12px;">0</span>
-  </a>
-</div>
-
 <div class="container">
-  <aside class="sidebar">
-    <ul class="categories">
-      <li data-category="electrician">Electrician</li>
-      <li data-category="plumber">Plumber</li>
-      <li data-category="painter">Painter</li>
-      <li data-category="mason">Mason</li>
-      <li data-category="carpenter">Carpenter</li>
-      <li data-category="welder">Welder</li>
-      <li data-category="mechanic">Mechanic</li>
-      <li data-category="repair">Computer/Mobile Repair</li>
-      <li data-category="printing">Printing Services</li>
-      <li data-category="rikshaw">Rikshaw Booking</li>
-      <li data-category="bolero">Bolero Booking</li>
-      <li data-category="tractor">Tractor Booking</li>
-      <li data-category="truck">Truck Booking</li>
-      <li data-category="bulldozer">Bulldozer Booking</li>
-      <li data-category="architecture">Architecture</li>
-      <li data-category="interior">Interior Design Help</li>
-      <li data-category="barber">Barber Booking</li>
-      <li data-category="parlour">Parlour Booking</li>
-      <li data-category="tailor">Tailor Booking</li>
-      <li data-category="cooler">AC/Cooler Service</li>
-      <li data-category="water">Water Tank Cleaning</li>
-      <li data-category="dj">DJ Services</li>
-      <li data-category="rentals">Chairs/Table for Rent</li>
-      <li data-category="tutor">Tutor / Coaching</li>
-    </ul>
-  </aside>
+    <aside class="sidebar">
+        <ul class="categories">
+            <li data-category="electrician">Electrician</li>
+            <li data-category="plumber">Plumber</li>
+            <li data-category="painter">Painter</li>
+            <li data-category="mason">Mason</li>
+            <li data-category="carpenter">Carpenter</li>
+            <li data-category="welder">Welder</li>
+            <li data-category="mechanic">Mechanic</li>
+            <li data-category="repair">Computer/Mobile Repair</li>
+            <li data-category="printing">Printing Services</li>
+            <li data-category="rikshaw">Rikshaw Booking</li>
+            <li data-category="bolero">Bolero Booking</li>
+            <li data-category="tractor">Tractor Booking</li>
+            <li data-category="truck">Truck Booking</li>
+            <li data-category="bulldozer">Bulldozer Booking</li>
+            <li data-category="architecture">Architecture</li>
+            <li data-category="interior">Interior Design Help</li>
+            <li data-category="barber">Barber Booking</li>
+            <li data-category="parlour">Parlour Booking</li>
+            <li data-category="tailor">Tailor Booking</li>
+            <li data-category="cooler">AC/Cooler Service</li>
+            <li data-category="water">Water Tank Cleaning</li>
+            <li data-category="dj">DJ Services</li>
+            <li data-category="rentals">Chairs/Table for Rent</li>
+            <li data-category="tutor">Tutor / Coaching</li>
+        </ul>
+    </aside>
 
-  <main class="service-area" id="serviceArea">
-    <!-- Services will appear here dynamically -->
-  </main>
+    <main class="service-area" id="serviceArea">
+        </main>
 </div>
+
+<a href="bookmarks.html" class="floating-action" style="right: 170px;">
+    🔖 Bookmarks <span class="bookmark-count">0</span>
+</a>
+
+<a href="booked.html" class="floating-action" style="right: 20px;">
+    📋 Booked <span class="booked-count">0</span>
+</a>
+
 
 <script src="js/malkservices.js"></script>
 </body>
