@@ -38,8 +38,7 @@ input[type="password"] {
 }
 
 button[type="submit"],
-.otp-btn,
-.google-btn {
+.otp-btn {
   padding: 10px;
   font-size: 16px;
   border-radius: 6px;
@@ -58,9 +57,11 @@ button[type="submit"] {
   margin-top: 10px;
 }
 
-.google-btn {
-   background-color: #175be3;
-  color: white;
+/* NEW CSS: To center the Google button, which is rendered as a div
+*/
+.g_id_signin {
+  display: flex; /* Make it a flex container */
+  justify-content: center; /* Center the content inside the container */
   margin-top: 10px;
 }
 
