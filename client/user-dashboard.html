@@ -107,23 +107,79 @@
   </main>
 
   <script>
-  const user = JSON.parse(localStorage.getItem("user"));
+// --- JWT AUTHENTICATION AND DATA FETCH ---
 
-  if (!user) {
-    alert("You must be logged in first.");
-    window.location.href = "user-login.html";
-  } else {
-    document.getElementById("welcomeUser").textContent =
-      `Hello, ${user.name} 👋`;
-  }
+// 1. Function to clear auth data and redirect to login
+function clearAuthAndRedirect() {
+    // Clear all related keys on session failure or logout
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userType");
+    window.location.href = "user-login.html";
+}
 
-  function logout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userType");
-    window.location.href = "user-login.html";
-  }
+// 2. Main function to verify session and load profile data
+async function checkAuthAndLoadProfile() {
+    const welcomeElement = document.getElementById("welcomeUser");
+    welcomeElement.textContent = "Verifying session...";
+
+    // Retrieve the JWT (ID Card)
+    const token = localStorage.getItem('userToken');
+
+    // If no token, redirect immediately
+    if (!token) {
+        clearAuthAndRedirect();
+        return; 
+    }
+
+    try {
+        // Fetch protected data using the JWT
+        const res = await fetch('http://localhost:5000/api/users/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            }
+        });
+
+        // Check for non-200 status codes (like 401 or 403) BEFORE reading JSON
+        if (!res.ok) {
+            // Read the response body for the error message
+            const errorData = await res.json();
+            console.error("Session Invalid:", errorData.message);
+            alert(`Session Invalid. Error: ${errorData.message}`);
+            clearAuthAndRedirect();
+            return;
+        }
+
+        // If res.ok is true (200), proceed to read data
+        const data = await res.json();
+
+        // Get the name, prioritizing the name field, then the email, or defaulting to 'User'
+        const displayName = data.user.name || data.user.email || 'User';
+
+        // Update the UI with verified data
+        welcomeElement.textContent = `Hello, ${displayName} 👋`;
+        
+    } catch (error) {
+        console.error('Failed to load dashboard:', error);
+        alert('Could not connect to the server or unexpected error. Logging out.');
+        clearAuthAndRedirect();
+    }
+}
+
+// Ensure the function runs when the page loads
+window.onload = checkAuthAndLoadProfile;
+
+
+// --- LOGOUT FUNCTION ---
+
+function logout() {
+    // Clear all authentication and user data
+    clearAuthAndRedirect();
+}
 </script>
-
 
 </body>
 </html>
