@@ -1,133 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard – MalkHub</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f9fef9;
-      color: #333;
-    }
-
-    header {
-      background-color: #006400;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-
-    header h1 {
-      margin: 0;
-    }
-
-    header button {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      background: #ff4444;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    main {
-      padding: 30px 20px;
-    }
-
-    .card-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      color: #006400;
-    }
-
-    .card p {
-      margin-bottom: 0;
-      font-size: 14px;
-    }
-    .logout-btn {
-  background-color: #c0392b;
-  color: white;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  float: right;
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard – MalkHub</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            width: 100%;
+            background: #006400;
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .logout-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        .dashboard-container {
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .welcome-message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        /* Style for error state (the "red dashboard") */
+        #error-message {
+            color: white;
+            background-color: #e53e3e; 
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+    </style>
 </head>
 <body>
+    <div class="header">
+        <h1>MalkHub Admin Panel</h1>
+        <button id="logoutButton" class="logout-btn">Logout</button>
+    </div>
 
-  <header class="admin-header">
-  <h1>MalkHub Admin Dashboard</h1>
-  <button onclick="logoutAdmin()" class="logout-btn">🚪 Logout</button>
-</header>
+    <div id="error-message">
+        ACCESS DENIED: You must be logged in as an administrator to view this page.
+    </div>
 
-  <main>
-    <section class="card-container">
-      <div class="card" onclick="location.href='view-products.html'">
-        <h3>📦 View All Products</h3>
-        <p>Uploaded by MalkBazar vendors</p>
-      </div>
-      <div class="card" onclick="location.href='view-services.html'">
-        <h3>🧰 View All Services</h3>
-        <p>Submitted by MalkServices vendors</p>
-      </div>
-      <div class="card" onclick="location.href='vendors.html'">
-        <h3>👤 Vendor Accounts</h3>
-        <p>Registered MalkHub vendors</p>
-      </div>
-      <div class="card" onclick="location.href='orders.html'">
-        <h3>📑 Orders & Bookings</h3>
-        <p>Placed by customers</p>
-      </div>
-    </section>
-  </main>
+    <div id="dashboardContent" class="dashboard-container" style="display: none;">
+        <div class="welcome-message">
+            <h2 id="userNameDisplay">Welcome, Admin User!</h2>
+            <p>This is your centralized control panel for managing users and content.</p>
+        </div>
+        <!-- Dashboard features (e.g., user lists, content management) would go here -->
+        <h3>Quick Stats</h3>
+        <p>Total Registered Users: 1500+</p>
+        <p>Pending Moderation: 5 items</p>
+    </div>
 
-  <script>
-  // ✅ Access restriction for admin-only pages
-  if (localStorage.getItem("isAdmin") !== "true") {
-    alert("Access Denied! Only admin allowed.");
-    window.location.href = "admin-login.html";
-  }
+    <script>
+        const logoutButton = document.getElementById('logoutButton');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const errorMessage = document.getElementById('error-message');
+        const userNameDisplay = document.getElementById('userNameDisplay');
 
-  // ✅ Proper admin logout
-  function logoutAdmin() {
-    alert("Admin logged out.");
-    localStorage.removeItem("isAdmin");
-    window.location.href = "admin-login.html";
-  }
-</script>
+        function logout() {
+            // Clear all stored user data
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userType');
+            // Redirect back to the admin login page
+            window.location.href = 'admin-login.html';
+        }
+        
+        // --- Initialization and Authorization Check ---
+        function initializeDashboard() {
+            const token = localStorage.getItem('userToken');
+            const userType = localStorage.getItem('userType');
+            const userName = localStorage.getItem('userName');
 
+            // --- DEBUG LOGGING ---
+            console.log(`[Auth Check] Token Exists: ${!!token}`);
+            console.log(`[Auth Check] User Role Found: "${userType}"`); // Added quotes to show if it's null or an empty string
+            // ---------------------
 
+            // 1. Check if token exists
+            if (!token) {
+                console.error("No authentication token found. Redirecting to login.");
+                showError();
+                return;
+            }
+
+            // 2. Check if user is an admin
+            if (userType !== 'admin') {
+                console.error(`User role is '${userType}'. Expected 'admin'. Redirecting to login.`);
+                showError();
+                return;
+            }
+
+            // If checks pass: Show content and greet the user
+            errorMessage.style.display = 'none'; // Ensure error message is hidden
+            dashboardContent.style.display = 'block';
+            userNameDisplay.textContent = `Welcome, ${userName || 'Administrator'}!`;
+            console.log("Admin dashboard initialized successfully.");
+        }
+
+        function showError() {
+            // Display the red error message
+            errorMessage.style.display = 'block';
+            // Hide the actual content
+            dashboardContent.style.display = 'none'; 
+            // Automatically log out after 2 seconds to ensure session is cleared
+            setTimeout(logout, 2000); 
+        }
+
+        // Attach event listener for the logout button
+        logoutButton.addEventListener('click', logout);
+
+        // Run the authorization check on page load
+        initializeDashboard();
+
+        // NOTE: In a real app, you would also use the token to fetch specific admin data from the server here.
+    </script>
 </body>
 </html>

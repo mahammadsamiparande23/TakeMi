@@ -1,79 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Email Login - Send OTP</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login with Email/OTP – MalkHub</title>
+    <link rel="stylesheet" href="css/user-signup.css" /> 
+    <style>
+        .signup-container h2 { color: #1e6b38; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Login via Email OTP</h2>
-    <input type="email" id="otp-email" placeholder="Enter your email" required />
-    <select id="role">
-      <option value="user">User</option>
-      <option value="vendor">Vendor</option>
-    </select>
-    <button onclick="sendOTP()">Send OTP</button>
-  </div>
+    <div class="signup-container">
+        <h2>Login with OTP</h2>
+        <form id="sendOtpForm">
+            <input type="email" name="email" id="otpEmail" placeholder="Enter Email Address" required>
+            <button type="submit" class="signup-btn">Send OTP</button>
+        </form>
+        <p class="login-text"><a href="user-login.html">Back to Password Login</a></p>
+    </div>
 
-  <script>
-  async function sendOTP() {
-  const email = document.getElementById("otp-email").value;
-  const role = document.getElementById("role").value;
-  try {
-    const res = await fetch("http://localhost:5000/api/users/send-otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, role }), // <-- use email and role variables
-    });
+    <script>
+        document.getElementById("sendOtpForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("otpEmail").value.trim();
+            
+            try {
+                const res = await fetch("http://localhost:5000/api/users/send-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Failed to send OTP");
-    alert("✅ OTP sent to your email. Now verify it.");
-    window.location.href = "otp-verify.html";
-  } catch (err) {
-    alert(`❌ Error: ${err.message}`);
-  }
-}
+                const data = await res.json();
 
-  </script>
+                if (!res.ok) {
+                    throw new Error(data.message || data.error || 'Failed to send OTP. Ensure the email is registered.');
+                }
+
+                alert(`✅ ${data.message} to ${email}. Redirecting to verification page.`);
+                // Store email temporarily for the next step
+                localStorage.setItem("otpEmail", email);
+                window.location.href = "otp-verify.html";
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,67 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Login – MalkHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      background: #f5fff5;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .login-box {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 12px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      padding: 12px;
-      background: #006400;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login – MalkHub</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f4f8; /* Light modern background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            border-top: 5px solid #006400; /* MalkHub green highlight */
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #006400;
+            outline: none;
+        }
+        button {
+            padding: 12px;
+            background: #006400;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #004d00;
+        }
+        #message-box {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            display: none; /* Hidden by default */
+            font-weight: 500;
+        }
+        .error {
+            background-color: #e53e3e;
+        }
+        .success {
+            background-color: #38a169;
+        }
+    </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>Admin Login</h2>
-    <input type="text" id="adminUsername" placeholder="Username" />
-    <input type="password" id="adminPassword" placeholder="Password" />
-    <button onclick="adminLogin()">Login</button>
-  </div>
+    <div class="login-box">
+        <h2>MalkHub Admin Login</h2>
+        <form id="adminLoginForm"> 
+            <input type="text" name="username" id="adminUsername" placeholder="Username (admin)" required autocomplete="username"/>
+            <input type="password" name="password" id="adminPassword" placeholder="Password (malk@123)" required autocomplete="current-password"/>
+            <button type="submit" id="loginButton">Login</button>
+        </form>
+        <div id="message-box"></div>
+    </div>
 
-  <script>
-    function adminLogin() {
-      const username = document.getElementById("adminUsername").value.trim();
-      const password = document.getElementById("adminPassword").value.trim();
+    <script>
+        // NOTE: Ensure your Node.js server is running on this URL/Port
+        const API_BASE_URL = "http://localhost:5000/api/users";
+        const form = document.getElementById("adminLoginForm");
+        const loginButton = document.getElementById("loginButton");
+        const messageBox = document.getElementById("message-box");
+        
+        // Function to display messages (instead of using alert())
+        function displayMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = (type === 'success' ? 'success' : 'error');
+            messageBox.style.display = 'block';
+        }
 
-      if (username === "admin" && password === "malk@123") {
-        localStorage.setItem("isAdmin", "true");
-        alert("✅ Welcome Admin!");
-        window.location.href = "admin-dashboard.html";
-      } else {
-        alert("❌ Invalid credentials");
-      }
-    }
-  </script>
+        // Handles successful login logic
+        function redirectToAdminDashboard(data) {
+            // Store JWT token and user info (especially the role)
+            localStorage.setItem("userToken", data.token); 
+            localStorage.setItem("userId", data.user.id);
+            localStorage.setItem("userName", data.user.name);
+            localStorage.setItem("userType", data.user.role); // CRITICAL: Must be 'admin'
+
+            displayMessage("✅ Login successful! Redirecting...", 'success');
+            
+            // Redirect after a brief delay
+            setTimeout(() => {
+                window.location.href = "admin-dashboard.html";
+            }, 500);
+        }
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault(); 
+            messageBox.style.display = 'none'; // Clear previous message
+            loginButton.disabled = true;
+
+            const username = document.getElementById("adminUsername").value.trim();
+            const password = document.getElementById("adminPassword").value.trim();
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin-login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                // Handle non-200 responses 
+                if (res.status === 404) {
+                    displayMessage("Endpoint Not Found (404). Check if server is running and the route is correct.", 'error');
+                    return;
+                }
+                if (res.status === 500) {
+                    // If this error shows, check your backend console immediately for a crash log.
+                    displayMessage("Server Error (500). Please check your backend console.", 'error');
+                    return;
+                }
+
+                // Attempt to parse JSON response
+                const data = await (res.headers.get("content-type")?.includes("application/json") ? res.json() : {});
+
+                if (!res.ok) {
+                    // If response is not OK (e.g., 401 Invalid Credentials)
+                    displayMessage(data.message || "Authentication Failed. Invalid username or password.", 'error');
+                    return;
+                }
+
+                // Successful Login (Status 200)
+                redirectToAdminDashboard(data);
+
+            } catch (err) {
+                console.error("Admin Login Fetch Error:", err);
+                // General network/fetch error (CORS, server offline, typo in URL)
+                displayMessage(`❌ Connection Error! Ensure your server is running at ${API_BASE_URL}. Error: ${err.message}`, 'error');
+            } finally {
+                loginButton.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

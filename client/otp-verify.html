@@ -1,80 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verify OTP</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #1e7e34;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Verify OTP – MalkHub</title>
+    <link rel="stylesheet" href="css/user-signup.css" /> 
+    <style>
+        .signup-container h2 { color: #1e6b38; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Verify OTP</h2>
-    <input type="email" id="otp-email" placeholder="Enter your email" required />
-    <input type="text" id="otp-code" placeholder="Enter OTP" required />
-    <select id="role">
-      <option value="user">User</option>
-      <option value="vendor">Vendor</option>
-    </select>
-    <button onclick="verifyOTP()">Verify OTP</button>
-  </div>
+    <div class="signup-container">
+        <h2>Verify OTP</h2>
+        <p id="otpMessage">Enter the 6-digit code sent to your email.</p>
+        <form id="verifyOtpForm">
+            <input type="text" name="otp" id="otpCode" placeholder="Enter OTP" maxlength="6" pattern="\d{6}" required>
+            <button type="submit" class="signup-btn">Verify and Login</button>
+        </form>
+        <p class="login-text"><a href="email-login.html">Resend OTP / Change Email</a></p>
+    </div>
 
-  <script>
-    async function verifyOTP() {
-      const email = document.getElementById("otp-email").value;
-      const otp = document.getElementById("otp-code").value;
-      const role = document.getElementById("role").value;
+    <script>
+        const email = localStorage.getItem("otpEmail");
+        const otpMessage = document.getElementById("otpMessage");
 
-      try {
-        const res = await fetch("http://localhost:5000/api/user/verify-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp, role }),
+        if (!email) {
+            otpMessage.textContent = "Error: Email not found. Please go back to email login.";
+            document.getElementById("verifyOtpForm").style.display = 'none';
+        } else {
+            otpMessage.textContent = `Enter the 6-digit code sent to ${email}.`;
+        }
+        
+        // Helper function for redirection (standardizes JWT storage)
+        function redirectToDashboard(data) {
+            const role = data.user.role || 'user'; 
+            localStorage.setItem("userToken", data.token); 
+            localStorage.setItem("userId", data.user.id);
+            localStorage.setItem("userName", data.user.name || data.user.email);
+            localStorage.setItem("userType", role); 
+            localStorage.removeItem("otpEmail"); // Clear temporary email
+
+            let redirectURL = './user-dashboard.html';
+            if (role === 'admin') {
+                redirectURL = './admin-dashboard.html';
+            } else if (role === 'vendor') {
+                redirectURL = './vendor-dashboard.html';
+                localStorage.setItem("vendorCategory", data.user.category); 
+            } 
+            
+            alert(`Login successful via OTP! Welcome, ${data.user.name || data.user.email}. Redirecting...`);
+            window.location.href = redirectURL;
+        }
+
+
+        document.getElementById("verifyOtpForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const otp = document.getElementById("otpCode").value.trim();
+
+            if (!email) return alert("Email missing. Please restart the login process.");
+            
+            try {
+                const res = await fetch("http://localhost:5000/api/users/verify-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, otp }),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || data.error || 'OTP verification failed');
+                }
+
+                // Backend now returns JWT and user data on successful verification
+                redirectToDashboard(data); 
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "OTP verification failed");
-        alert("✅ Login successful with OTP!");
-        // Store token or redirect user
-        localStorage.setItem("token", data.token); // if token is returned
-        window.location.href = "/dashboard.html"; // example
-      } catch (err) {
-        alert(`❌ Error: ${err.message}`);
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>

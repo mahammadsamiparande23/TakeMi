@@ -1,10 +1,8 @@
-// server/controllers/userController.js (UPDATED - Entire Content)
-
 const User = require('../models/userModel');
 const Otp = require('../models/otpModel');
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const jwt = require('jsonwebtoken'); // ✅ NEW IMPORT
+const jwt = require('jsonwebtoken'); 
 require("dotenv").config();
 
 // ====================== GOOGLE SIGN-IN IMPORTS =========================
@@ -15,211 +13,356 @@ const client = new OAuth2Client(CLIENT_ID);
 
 // ====================== JWT TOKEN GENERATION HELPER =========================
 const generateAuthToken = (user) => {
-    // Generates a JWT token using the secret from your .env
-    return jwt.sign(
-        { _id: user._id, email: user.email }, // Payload
-        process.env.JWT_SECRET,             // Secret
-        { expiresIn: '7d' }                 // Token expiration
-    );
+    // Includes user role in the JWT payload
+    return jwt.sign(
+        { _id: user._id, email: user.email, role: user.role }, 
+        process.env.JWT_SECRET,             
+        { expiresIn: '7d' }                 
+    );
 };
 
 
 // Helper to check if OTP is expired (5 minutes)
 const isExpired = (createdAt) => {
-    const now = Date.now();
-    const expirationTime = 5 * 60 * 1000; // 5 minutes in ms
-    return now - new Date(createdAt).getTime() > expirationTime;
+    const now = Date.now();
+    const expirationTime = 5 * 60 * 1000; // 5 minutes in ms
+    return now - new Date(createdAt).getTime() > expirationTime;
 };
 
-// ====================== SIGNUP =========================
-exports.signupUser = async (req, res) => {
-    try {
-        const { name, email, password, mobile } = req.body;
+// ====================== USER SIGNUP =========================
+const signupUser = async (req, res) => {
+    try {
+        const { name, email, password, mobile } = req.body;
 
-        const existing = await User.findOne({ email });
-        if (existing) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        // Note: The mobile and password fields are now optional in the model
-        const user = new User({ name, email, mobile, password: hashedPassword }); 
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ name, email, mobile, password: hashedPassword }); 
 
-        await user.save();
-        res.status(201).json({ message: "Signup successful", user });
-    } catch (err) {
-        console.error("Signup error:", err);
-        res.status(500).json({ error: "Signup failed" });
-    }
+        await user.save();
+        const authToken = generateAuthToken(user); 
+
+        res.status(201).json({ 
+            message: "Signup successful", 
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role 
+            }
+        });
+    } catch (err) {
+        console.error("Signup error:", err);
+        res.status(500).json({ error: "Signup failed" });
+    }
 };
 
-// ======================= LOGIN =========================
-exports.loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// ======================= USER LOGIN =========================
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(401).json({ message: "Invalid email or password" });
+        if (user.googleId && !user.password) {
+            return res.status(401).json({ message: "User signed up with Google. Please use Google Sign-In." });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ message: "Invalid email or password" });
+        const authToken = generateAuthToken(user); 
+        const category = user.role === 'vendor' && user.vendorDetails ? user.vendorDetails.category : undefined;
 
-        // Prevent Google sign-up users from using this endpoint without a password
-        if (user.googleId && !user.password) {
-            return res.status(401).json({ message: "User signed up with Google. Please use Google Sign-In." });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
-
-        // Generate JWT token on successful password login
-        const authToken = generateAuthToken(user); 
-
-        res.status(200).json({ message: "Login successful", user, token: authToken });
-    } catch (err) {
-        console.error("Login error:", err);
-        res.status(500).json({ error: "Login failed" });
-    }
+        res.status(200).json({ 
+            message: "Login successful", 
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                category: category
+            } 
+        });
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ error: "Login failed" });
+    }
 };
 
-// ======================= EDIT PROFILE =====================
-exports.editProfile = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, email, password } = req.body;
-
-        const updates = { name, email };
-        if (password) {
-            const hashed = await bcrypt.hash(password, 10);
-            updates.password = hashed;
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true });
-
-        if (!updatedUser) return res.status(404).json({ message: "User not found" });
-
-        res.status(200).json({ message: "Profile updated", user: updatedUser });
-    } catch (err) {
-        console.error("Profile update error:", err);
-        res.status(500).json({ error: "Update failed" });
-    }
-};
 
 // ======================= SEND OTP =====================
-exports.sendOtp = async (req, res) => {
-    const { email } = req.body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+const sendOtp = async (req, res) => {
+    const { email } = req.body;
+    // Check if user exists before sending OTP (login flow)
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(404).json({ message: "No account found with this email." });
+    }
 
-    try {
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
 
-        await transporter.sendMail({
-            from: process.env.EMAIL,
-            to: email,
-            subject: "Your OTP Code",
-            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
-        });
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
 
-        await Otp.findOneAndUpdate(
-            { email },
-            { email, otp, createdAt: new Date() },
-            { upsert: true }
-        );
+        await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Your MalkHub OTP Code",
+            text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
+        });
 
-        res.status(200).json({ message: "OTP sent successfully" });
-    } catch (err) {
-        console.error("OTP send error:", err);
-        res.status(500).json({ error: "Failed to send OTP" });
-    }
+        await Otp.findOneAndUpdate(
+            { email },
+            { email, otp, createdAt: new Date() },
+            { upsert: true }
+        );
+
+        res.status(200).json({ message: "OTP sent successfully" });
+    } catch (err) {
+        console.error("OTP send error:", err);
+        res.status(500).json({ error: "Failed to send OTP" });
+    }
 };
 
-// ======================= VERIFY OTP =====================
-exports.verifyOtp = async (req, res) => {
-    const { email, otp } = req.body;
+// ======================= VERIFY OTP (Issues JWT) =====================
+const verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
 
-    try {
-        const entry = await Otp.findOne({ email });
+    try {
+        const entry = await Otp.findOne({ email });
 
-        if (!entry) {
-            return res.status(400).json({ message: "OTP not found or expired" });
-        }
+        if (!entry || isExpired(entry.createdAt)) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+        if (entry.otp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
 
-        if (entry.otp !== otp || isExpired(entry.createdAt)) {
-            return res.status(400).json({ message: "Invalid or expired OTP" });
-        }
+        await Otp.deleteOne({ email });
+        
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found. Please sign up with email/password first." });
+        }
 
-        await Otp.deleteOne({ email });
+        const authToken = generateAuthToken(user);
+        const category = user.role === 'vendor' && user.vendorDetails ? user.vendorDetails.category : undefined;
 
-        res.status(200).json({ message: "OTP verified successfully" });
-    } catch (err) {
-        console.error("OTP verify error:", err);
-        res.status(500).json({ message: "Error verifying OTP" });
-    }
+        res.status(200).json({ 
+            message: "OTP verified successfully. Logged in.",
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                category: category 
+            }
+        });
+    } catch (err) {
+        console.error("OTP verify error:", err);
+        res.status(500).json({ message: "Error verifying OTP" });
+    }
 };
 
 
-// ======================= GOOGLE SIGN-IN (NEW ENDPOINT LOGIC) =====================
-exports.googleLogin = async (req, res) => {
-    // Client sends the ID token in the request body
-    const { idToken } = req.body; 
+// ======================= GOOGLE SIGN-IN/SIGNUP =====================
+const googleLogin = async (req, res) => {
+    const { idToken } = req.body; 
 
-    if (!idToken) {
-        return res.status(400).json({ message: 'Missing Google ID token' });
-    }
+    if (!idToken) {
+        return res.status(400).json({ message: 'Missing Google ID token' });
+    }
 
-    try {
-        // 1. Verify the ID Token with Google
-        const ticket = await client.verifyIdToken({
-            idToken: idToken,
-            audience: CLIENT_ID, // Ensures the token is for your app
-        });
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: idToken,
+            audience: CLIENT_ID, 
+        });
 
-        const googlePayload = ticket.getPayload();
-        
-        // Extract key user data from the verified token
-        const { sub: googleId, email, name, picture } = googlePayload;
+        const googlePayload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = googlePayload;
 
-        // 2. Find or Create the user in your database
-        // Check by Google ID (if already linked) or email (to link an existing account)
-        let user = await User.findOne({ $or: [{ googleId }, { email }] });
+        let user = await User.findOne({ $or: [{ googleId }, { email }] });
 
-        if (!user) {
-            // User does not exist, create a new social account
-            user = await User.create({
-                email,
-                name,
-                googleId,
-                profilePicture: picture,
-                // password and mobile are not set, which is fine based on the updated model schema
-            });
-        } else if (!user.googleId) {
-            // User exists via email/password, but hasn't linked Google yet. Link it now.
-            user.googleId = googleId;
-            user.profilePicture = user.profilePicture || picture; // Preserve existing picture if it exists
-            await user.save();
-        }
+        if (!user) {
+            // Google SIGNUP: Creates a new user with default 'user' role.
+            user = await User.create({
+                email,
+                name,
+                googleId,
+                profilePicture: picture,
+                role: 'user' // Default to 'user' for Google signups
+            });
+        } else if (!user.googleId) {
+            // Existing email/password user linked their account (Google LOGIN)
+            user.googleId = googleId;
+            user.profilePicture = user.profilePicture || picture; 
+            await user.save();
+        }
+        
+        // If the user is a vendor, grab the category for the dashboard.
+        const category = user.role === 'vendor' && user.vendorDetails ? user.vendorDetails.category : undefined;
 
-        // 3. Generate your application's JWT
-        const authToken = generateAuthToken(user); 
 
-        // 4. Send success response
-        res.status(200).json({ 
-            message: 'Google login successful', 
-            token: authToken, // Return your app's auth token
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                // ... other necessary user fields
-            }
-        });
+        const authToken = generateAuthToken(user); 
 
-    } catch (error) {
-        console.error('Google Sign-In Verification Error:', error.message);
-        // Respond with an unauthorized error if token verification fails
-        res.status(401).json({ message: 'Authentication failed: Invalid Google ID Token.' });
-    }
+        res.status(200).json({ 
+            message: 'Google login successful', 
+            token: authToken, 
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role, 
+                category: category
+            }
+        });
+
+    } catch (error) {
+        console.error('Google Sign-In Verification Error:', error.message);
+        res.status(401).json({ message: 'Authentication failed: Invalid Google ID Token.' });
+    }
+};
+
+// ======================= VENDOR SIGNUP =========================
+const vendorSignup = async (req, res) => {
+    try {
+        const { name, email, mobile, password, shopName, category, location } = req.body;
+
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        const user = new User({ 
+            name, 
+            email, 
+            mobile, 
+            password: hashedPassword,
+            role: 'vendor', 
+            vendorDetails: { shopName, category, location } 
+        }); 
+
+        await user.save();
+        const authToken = generateAuthToken(user); 
+
+        res.status(201).json({ 
+            message: "Vendor signup successful", 
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role, 
+                category: category 
+            } 
+        });
+    } catch (err) {
+        console.error("Vendor signup error:", err);
+        res.status(500).json({ error: "Vendor signup failed" });
+    }
+};
+
+// ======================= VENDOR LOGIN =========================
+const vendorLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user || user.role !== 'vendor') {
+            return res.status(401).json({ message: "Invalid credentials or not a vendor" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
+
+        const authToken = generateAuthToken(user); 
+        
+        const category = user.vendorDetails ? user.vendorDetails.category : 'default';
+
+        res.status(200).json({ 
+            message: "Vendor login successful", 
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role, 
+                category: category 
+            } 
+        });
+    } catch (err) {
+        console.error("Vendor login error:", err);
+        res.status(500).json({ error: "Vendor login failed" });
+    }
+};
+
+
+// ======================= ADMIN LOGIN =========================
+const adminLogin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // ⚠️ WARNING: Using hardcoded credentials for demo. 
+        if (username !== "admin" || password !== "malk@123") {
+            return res.status(401).json({ message: "Invalid Admin Credentials" });
+        }
+
+        // Mock Admin User Object for JWT Generation:
+        const adminUser = { 
+            _id: 'admin_id_001', 
+            email: 'admin@malkhub.com', 
+            name: 'MalkHub Admin',
+            role: 'admin' 
+        };
+
+        const authToken = generateAuthToken(adminUser);
+
+        res.status(200).json({ 
+            message: "Admin login successful", 
+            token: authToken,
+            user: {
+                id: adminUser._id,
+                name: adminUser.name,
+                email: adminUser.email,
+                role: adminUser.role 
+            } 
+        });
+    } catch (err) {
+        console.error("Admin login error:", err);
+        res.status(500).json({ error: "Admin login failed" });
+    }
+};
+
+// ======================= EDIT PROFILE (Placeholder) =========================
+const editProfile = async (req, res) => {
+    // Placeholder implementation, assuming logic will be added here
+    return res.status(200).json({ message: "Edit profile endpoint hit." });
+};
+
+// ======================= FINAL EXPORTS =========================
+// ✅ FIX: Export all functions which are now defined as local constants
+module.exports = {
+    signupUser,
+    loginUser,
+    sendOtp,
+    verifyOtp,
+    googleLogin,
+    vendorSignup,
+    vendorLogin,
+    adminLogin, 
+    editProfile,
 };
