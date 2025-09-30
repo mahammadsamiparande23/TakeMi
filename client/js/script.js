@@ -16,8 +16,10 @@ function toggleProfileDropdown() {
 
 // Function to handle Logout
 function logout() {
+    // NOTE: This should be updated to match the local storage keys used in your admin-login/dashboard (userToken, userId, etc.)
     localStorage.removeItem("user");
-    window.location.href = "login.html";
+    // Ensure you redirect to the correct common login page if one exists, otherwise back to the index
+    window.location.href = "index.html"; 
 }
 
 // --- Main Event Listeners ---
@@ -54,8 +56,8 @@ document.getElementById("cameraBtn").addEventListener("click", () => {
 document.getElementById("cameraInput").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
-        alert(`Image uploaded: ${file.name}`);
-        // Optional: integrate image recognition API here
+        // In a real application, you would send this file to a Vision API for image-based search
+        alert(`Image uploaded: ${file.name}. Searching based on image content is a future feature!`);
     }
 });
 
@@ -91,7 +93,8 @@ document.querySelectorAll(".latest-card a").forEach(a => {
     a.addEventListener("click", (e) => {
         e.preventDefault(); // Stop default navigation
         const url = new URL(a.href);
-        const query = url.searchParams.get("search") || url.searchParams.get("q");
+        // Extracts 'search' from Bazar links or 'q' from Service links
+        const query = url.searchParams.get("search") || url.searchParams.get("q"); 
 
         if (query) {
              document.getElementById("searchInput").value = query;
@@ -101,14 +104,6 @@ document.querySelectorAll(".latest-card a").forEach(a => {
 });
 
 
-// Toggle sublist on grid-item click (Removed, as .grid-item is not defined in the provided HTML)
-/* document.querySelectorAll(".grid-item").forEach(item => {
-    item.addEventListener("click", () => {
-        item.classList.toggle("active");
-    });
-});
-*/
-
 // Language switching
 document.getElementById("languageSelector")?.addEventListener("change", (e) => {
     const lang = e.target.value;
@@ -116,7 +111,7 @@ document.getElementById("languageSelector")?.addEventListener("change", (e) => {
     alert(`Language changed to: ${lang}`);
 });
 
-// Login Modal open via header link (for older/alternate links if they exist)
+// Login Modal open via header link
 document.querySelectorAll('a[href="#login"]').forEach(link => {
     link.addEventListener("click", (e) => {
         e.preventDefault();
@@ -126,6 +121,7 @@ document.querySelectorAll('a[href="#login"]').forEach(link => {
 
 // Login Modal close via background click or X button
 document.getElementById("loginModal").addEventListener("click", (e) => {
+    // Only close if the click is directly on the modal backdrop or the close button
     if (e.target.id === "loginModal" || e.target.classList.contains("close-btn")) {
         closeLoginModal();
     }
@@ -135,7 +131,7 @@ document.getElementById("loginModal").addEventListener("click", (e) => {
 const user = JSON.parse(localStorage.getItem("user"));
 if (user) {
     // Assuming 'user' is the object stored upon successful login
-    document.getElementById("profile-menu").classList.remove("hidden");
+    document.getElementById("profile-menu").style.display = 'block'; // Show profile menu
     // Also, hide the standard login button if a user is found
     document.querySelector('.header-login-btn').style.display = 'none';
 }
